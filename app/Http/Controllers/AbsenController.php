@@ -74,4 +74,38 @@ class AbsenController extends Controller
             return redirect()->back();
         }
     }
+
+    public function read()
+    {
+        $pegawais = Absen::all();
+        $statuses = $this->status();
+        return view('absen.read', compact('pegawais', 'statuses'));
+    }
+
+    public function update(Request $request)
+    {
+        $absenId = $request->id;
+        $absen = Absen::find($absenId);
+        $absen->status = $request->status;
+        try {
+            $absen->save();
+            Alert::success('Sukses', 'status berhasil di konfirmasi');
+            return redirect()->back();
+        } catch (\Throwable $th) {
+            //throw $th;
+            Alert::error('Sukses', $th->getMessage());
+            return redirect()->back();
+        }
+    }
+
+    public function status()
+    {
+        return [
+            'belum konfirmasi' => 'belum konfirmasi',
+            'hadir' => 'hadir',
+            'alpa' => 'alpa',
+            'izin' => 'izin',
+            'sakit' => 'sakit'
+        ];
+    }
 }

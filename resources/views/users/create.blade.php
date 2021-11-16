@@ -52,12 +52,11 @@
                         <label for="golongan">Golongan</label>
                         <select name="golongan_id" class="form-control @error('golongan_id') is-invalid @enderror" id="golongan">
                             @foreach ($golongans as $golongan)
-                            @if (old('golongan_id') == $golongan->id)
-                                <option value="{{ $golongan->id }}" selected>{{ $golongan->nama }}</option>
-                            @else
-                                <option value="">-- Pilih --</option>
-                                <option value="{{ $golongan->id }}">{{ $golongan->nama }}</option>
-                            @endif
+                                @if (old('golongan_id') == $golongan->id)
+                                    <option value="{{ $golongan->id }}" selected>{{ $golongan->nama }}</option>
+                                @else
+                                    <option value="{{ $golongan->id }}">{{ $golongan->nama }}</option>
+                                @endif
                             @endforeach
                         </select>
                         @error('golongan_id')
@@ -73,7 +72,6 @@
                             @if (old('jabatan_id') == $jabatan->id)
                                 <option value="{{ $jabatan->id }}" selected>{{ $jabatan->nama }}</option>
                             @else
-                                <option value="">-- Pilih --</option>
                                 <option value="{{ $jabatan->id }}">{{ $jabatan->nama }}</option>
                             @endif
                         @endforeach

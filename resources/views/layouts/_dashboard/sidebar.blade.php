@@ -54,9 +54,9 @@
 
     @if(Auth::user()->level == "admin")
     <li class="nav-item">
-        <a class="nav-link" href="">
-            <i class="fas fa-users"></i>
-            <span>Laporan Absensi</span>
+        <a class="nav-link" href="{{ route('absens.read') }}">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Laporan Absen</span>
         </a>
     </li>
     @endif

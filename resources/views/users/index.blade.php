@@ -30,7 +30,7 @@
                             <th>Nip</th>
                             <th>Golongan</th>
                             <th>Jabatan</th>
-                            <th>Aksi</th>
+                            {{-- <th>Aksi</th> --}}
                         </tr>
                     </thead>
                     <tbody>
@@ -41,8 +41,8 @@
                                 <td>{{ $user->nip }}</td>
                                 <td>{{ $user->golongan->nama }}</td>
                                 <td>{{ $user->jabatan->nama }}</td>
-                                <td>
-                                    <button class="btn btn-outline-warning btn-sm" id="show" 
+                                {{-- <td>
+                                    <button class="btn btn-outline-warning btn-sm" id="show" data-toggle="modal" data-target="#exampleModal" 
                                         data-nama="{{ $user->name }}"
                                         data-nip="{{ $user->nip }}"
                                         data-email="{{ $user->email }}"
@@ -61,7 +61,7 @@
                                             </span>
                                         </button>
                                     </form>
-                                </td>
+                                </td> --}}
                             </tr>
                         @endforeach
                     </tbody>
@@ -75,27 +75,29 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ModalLabel"></h5>
+                <h5 class="modal-title" id="ModalLabel">Detail Pegawai</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <input type="text" class="form-control" value="" id="name" disabled>
-                </div>
-                <div class="form-group">
-                    <input type="email" class="form-control" value="" id="email" disabled>
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" value="" id="nip" disabled>
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" value="" id="jabatan" disabled>
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" value="" id="golongan" disabled>
-                </div>
+                <form>
+                    <div class="form-group">
+                        <input type="text" class="form-control" value="" id="name" disabled>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="form-control" value="" id="email" disabled>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" value="" id="nip" disabled>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" value="" id="jabatan" disabled>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" value="" id="golongan" disabled>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -120,27 +122,28 @@
     $(document).ready(function(){
          // Event: delete post
         $("form[role='alert']").submit(function(event) {
-        event.preventDefault();
-        Swal.fire({
-            title: "Peringatan",
-            text: $(this).attr('alert-text'),
-            icon: 'warning',
-            allowOutsideClick: false,
-            showCancelButton: true,
-            cancelButtonText:  "Batal",
-            reverseButtons: true,
-            confirmButtonText:  "Hapus",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // todo: process of deleting categories
-                event.target.submit()
-            }
+            event.preventDefault();
+            Swal.fire({
+                title: "Peringatan",
+                text: $(this).attr('alert-text'),
+                icon: 'warning',
+                allowOutsideClick: false,
+                showCancelButton: true,
+                cancelButtonText:  "Batal",
+                reverseButtons: true,
+                confirmButtonText:  "Hapus",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // todo: process of deleting categories
+                    event.target.submit()
+                }
+            });
         });
-        });
-    });
 
-    $('#show').on('click', function(){
-        let data = {
+    })
+
+    $('#dataTable').on('click', '#show', function(){
+        var data = {
             nama : $(this).data('nama'),
             nip : $(this).data('nip'),
             email : $(this).data('email'),
@@ -148,15 +151,16 @@
             jabatan : $(this).data('jabatan'),
         }
 
-        $('#name').val(data.nama)
-        $('#nip').val(data.nip)
-        $('#email').val(data.email)
-        $('#golongan').val(data.golongan)
-        $('#jabatan').val(data.jabatan)
 
-        $('#exampleModal').modal('show')
+        $('#exampleModal').find('#name').val(data.nama)
+        $('#exampleModal').find('#nip').val(data.nip)
+        $('#exampleModal').find('#email').val(data.email)
+        $('#exampleModal').find('#golongan').val(data.golongan)
+        $('#exampleModal').find('#jabatan').val(data.jabatan)
 
     })
+
+    
 
 
 </script>

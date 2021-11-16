@@ -8,7 +8,6 @@ use App\Models\Jabatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Hash;
 
@@ -23,6 +22,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::where('level', 'pegawai')->get();
+        // $users = User::all();
         $golongans = Golongan::all();
         $jabatans = Jabatan::all();
         return view('users.index', compact('golongans', 'jabatans', 'users'));
@@ -152,20 +152,7 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
-    {
-        DB::beginTransaction();
-        try {
-            $user->delete();
-            Alert::success('Sukses', 'Data berhasil dihapus');
-            return redirect()->back();
-        } catch (\Throwable $th) {
-            //throw $th;
-            DB::rollBack();
-            Alert::error('Gagal', ['error' => $th->getMessage()]);
-            return redirect()->back();
-        }
-    }
+
 
     private function attributes(){
         return [

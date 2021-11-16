@@ -57,4 +57,9 @@ class User extends Authenticatable
         return $this->belongsTo(Jabatan::class);
     }
 
+    public function absen()
+    {
+        return $this->belongsTo(Absen::class);
+    }
+
 }

@@ -20,6 +20,7 @@ class CreateAbsensTable extends Migration
             $table->time('kedatangan');
             $table->time('kepulangan')->nullable();
             $table->string('keterangan')->nullable();
+            $table->enum('status',['belum konfirmasi', 'hadir', 'alpa', 'sakit', 'izin']);
             $table->timestamps();
         });
     }

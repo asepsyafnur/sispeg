@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Jabatan;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class JabatanController extends Controller
 {
@@ -16,119 +16,84 @@ class JabatanController extends Controller
      */
     public function index()
     {
-        $jabatans = Jabatan::all();
-        return view('jabatan.index', compact('jabatans'));
+        return view('jabatan.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function read()
     {
-        //
+        $jabatans = Jabatan::orderBy('nama', 'desc')->get();
+        return DataTables::of($jabatans)
+                        ->addIndexColumn()
+                        ->addColumn('aksi', function($row){
+                            return '<div class="btn-group">
+                                        <button class="btn btn-sm btn-warning" data-id="'.$row['id'].'" id="btnEdit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" data-id="'.$row['id'].'" id="btnHapus" alert-text="Apakah anda yakin ingin menghapus jabatan '.$row['nama'].'">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>';
+                        })->rawColumns(['aksi'])->make(true);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'nama' => 'required|string|unique:jabatans,nama'
-            ],$this->attributes());
+        $validator = Validator::make($request->all(),['nama'=>'required|string|unique:jabatans,nama'], $this->attributes());
         if($validator->fails()){
-            return redirect()->back()->withInput($request->all())->withErrors($validator)->with('createFail', 'oke');
-        }
-
-        try {
-            Jabatan::create([
-                'nama' => $request->nama
-            ]);
-            Alert::success('Sukses', 'Data berhasil ditambahkan');
-            return redirect()->back();
-        } catch (\Throwable $th) {
-            //throw $th;
-            Alert::error('Gagal', ['error' => $th->getMessage()]);
-            return redirect()->back()->withInput($request->all());
+            return response()->json(['code' => 400, 'error' => $validator->errors()->toArray()]);
+        }else{
+            try {
+                jabatan::create([
+                    'nama' => $request->nama
+                ]);
+                return response()->json(['code' => 200, 'msg' => 'Data berhasil ditambahkan']);
+            } catch (\Throwable $th) {
+                //throw $th;
+                return response()->json(['code' => 400, 'msg' => $th->getMessage()]);
+            }
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Jabatan  $jabatan
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Jabatan $jabatan)
+    public function edit(Request $request)
     {
-        //
+        $jabatanId = $request->id;
+        $jabatan = jabatan::find($jabatanId);
+        return response()->json(['details' => $jabatan]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Jabatan  $jabatan
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Jabatan $jabatan)
+    public function update(Request $request)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Jabatan  $jabatan
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Jabatan $jabatan)
-    {
+        $jabatanId = $request->id;
+        $jabatan = Jabatan::find($jabatanId);
         $validator = Validator::make(
             $request->all(),
             [
-                'nama' => 'required|string|unique:jabatans,nama,' . $jabatan->id
+                'nama' => 'required|string|unique:jabatans,nama,' . $jabatanId
             ],$this->attributes());
         if($validator->fails()){
-            return redirect()->back()->withInput($request->all())->withErrors($validator)->with('editFail', 'oke');
+            return response()->json(['status' => 400, 'error' => $validator->errors()->toArray()]);
         }
 
         try {
             $jabatan->update([
                 'nama' => $request->nama
             ]);
-            Alert::success('Sukses', 'Data berhasil diubah');
-            return redirect()->back();
+            return response()->json(['status' => 200, 'msg' => 'Data berhasil diubah']);
         } catch (\Throwable $th) {
             //throw $th;
-            Alert::error('Gagal', ['error' => $th->getMessage()]);
-            return redirect()->back()->withInput($request->all());
+            return response()->json(['status' => 400, 'msg' => $th->getMessage()]);
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Jabatan  $jabatan
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Jabatan $jabatan)
+    public function destroy(Request $request)
     {
+        $jabatanId = $request->id;
         try {
-            $jabatan->delete();
-            Alert::success('Sukses', 'Data berhasil dihapus');
-            return redirect()->back();
+            Jabatan::find($jabatanId)->delete();
+            return response()->json(['status' => 200, 'msg' => 'Data berhasil dihapus']);
         } catch (\Throwable $th) {
             //throw $th;
-            Alert::error('Gagal', ['error' => $th->getMessage()]);
-            return redirect()->back();
+            return response()->json(['status' => 400, 'msg' => $th->getMessage()]);
         }
     }
 
@@ -136,8 +101,7 @@ class JabatanController extends Controller
     {
         return [
             'nama.required' => "*jabatan tidak boleh kosong",
-            'nama.unique' => "*nama yang anda masukkan sudah digunakan",
-            'nama.string' => "*silahkan gunakan string",
+            'nama.unique'   => "*data yang anda masukkan sudah digunakan"
         ];
     }
 }

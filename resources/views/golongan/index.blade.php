@@ -9,7 +9,6 @@
     <div class="d-sm-flex align-items-center justify-content-between">
         <h1 class="h3 mb-2 text-gray-800">Golongan</h1>
     </div>
-    <!-- DataTales Example -->
     <div class="row">
         <div class="col-md-8">
             <div class="card shadow mb-4">
@@ -18,15 +17,16 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover table-condensed text-center" id="golonganTable" width="100%" cellspacing="0">
+                        <table class="table table-bordered text-center" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
-                                    <th>#</th>
+                                    <th>No</th>
                                     <th>Golongan</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody></tbody>
+                            <tbody>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -38,12 +38,11 @@
                     <h6 class="m-0 font-weight-bold text-primary">Tambah Golongan</h6>
                 </div>
                 <div class="card-body">
-                    <form action="{{route('golongan.store')}}" method="POST" id="add-golongan-form">
+                    <form action="{{ route('golongan.store') }}" method="POST" id="add-golongan">
                         @csrf
                         <div class="form-group">
-                            <label for="nama">Golongan</label>
-                            <input type="text" name="nama" class="form-control" id="nama" placeholder="Masukkan nama golongan">
-                            <span class="text-danger error-text nama_error"></span>
+                            <input type="text" name="nama" class="form-control" value="{{ old('nama') }}" id="nama" placeholder="Masukkan nama golongan">
+                            <span class="invalid-feedback nama_error"></span>
                         </div>
                         <div class="btn-group w-100">
                             <button type="submit" class="btn btn-primary">Simpan</button>
@@ -79,9 +78,109 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-            // Event: delete post
-        $("form[role='alert']").submit(function(event) {
-        event.preventDefault();
+        
+        // tambah golongan
+        $('#add-golongan').on('submit', function(e){
+            e.preventDefault();
+            var form = this;
+            $.ajax({
+                url : $(form).attr('action'),
+                method : $(form).attr('method'),
+                data : new FormData(form),
+                processData : false,
+                dataType : 'json',
+                contentType : false,
+                beforeSend : function(){
+                    $(form).find('span.invalid-feedback').text('');
+                },
+                success : function(data) {
+                    if(data.code == 400){
+                        $.each(data.error, function(prefix, val){
+                            $(form).find('#nama').addClass('is-invalid');
+                            $(form).find('span.'+prefix+'_error').text(val[0]);
+                        });
+                    }else{
+                        $(form).find('#nama').removeClass('is-invalid');
+                        $('#dataTable').DataTable().ajax.reload(null, false);
+                        $(form)[0].reset();
+                        Swal.fire({
+                            title: "Sukses",
+                            text: data.msg,
+                            icon: 'success',
+                            showConfirmButton : false,
+                            timer: 2000
+                        });
+                    }
+                }
+            });
+        });
+
+
+    });
+
+    // read golongan
+    $('#dataTable').DataTable({
+        processing : true,
+        info : true,
+        ajax : "{{ route('golongan.read') }}",
+        columns : [
+            {data : 'DT_RowIndex', name : 'DT_RowIndex'},
+            {data : 'nama', name : 'nama'},
+            {data : 'aksi', name : 'aksi'}
+        ],
+    });
+
+    $(document).on('click', '#btnEdit', function(){
+        var id = $(this).data('id');
+        $('#editModal').find('form')[0].reset();
+        $('#editModal').find('span.invalid-feedback').text('');
+        $.post("{{ route('golongan.edit') }}", {id:id}, function(data){
+            $('#editModal').find('#id').val(data.details.id)
+            $('#editModal').find('#nama').val(data.details.nama)
+            $('#editModal').modal('show');
+        }, 'json');
+    });
+
+    $('#update-form').on('submit', function(e){
+        e.preventDefault();
+        var form = this;
+        $.ajax({
+            url : $(form).attr('action'),
+            method : $(form).attr('method'),
+            data : new FormData(form),
+            processData : false,
+            dataType : 'json',
+            contentType : false,
+            beforeSend : function(){
+                $(form).find('span.invalid-feedback').text('');
+            },
+            success : function(data){
+                if(data.status == 400){
+                    $.each(data.error, function(prefix, val){
+                        $(form).find('#nama').addClass('is-invalid');
+                        $(form).find('span.'+prefix+'_error').text(val[0]);
+                    });
+                }else{
+                    $('#dataTable').DataTable().ajax.reload(null, false);
+                    $('#editModal').modal('hide');
+                    $(form).find('#nama').removeClass('is-invalid');
+                    $('#editModal').find('form')[0].reset();
+                    Swal.fire({
+                            title: "Sukses",
+                            text: data.msg,
+                            icon: 'success',
+                            showConfirmButton : false,
+                            timer: 2000
+                    });
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '#btnHapus', function(){
+        var id = $(this).data('id');
+        var url = "{{ route('golongan.destroy') }}"
+         // Event: delete post
         Swal.fire({
             title: "Peringatan",
             text: $(this).attr('alert-text'),
@@ -92,106 +191,30 @@
             reverseButtons: true,
             confirmButtonText:  "Hapus",
         }).then((result) => {
-                if (result.isConfirmed) {
-                    // todo: process of deleting categories
-                    event.target.submit()
-                }
-            });
-        });
-
-        // tambah golongan
-        $('#add-golongan-form').on('submit', function(e){
-            e.preventDefault();
-            var form = this;
-            $.ajax({
-                url : $(form).attr('action'),
-                method: $(form).attr('method'),
-                data : new FormData(form),
-                processData : false,
-                dataType : 'json',
-                contentType: false,
-                beforeSend : function (){
-                    $(form).find('span.error-text').text('')
-                },
-                success : function (data) {
-                    if(data.code == 0 ){
-                        $.each(data.error, function(prefix, val){
-                            $(form).find('span.'+prefix+'_error').text(val[0]);
+            if (result.value) {
+                $.post(url,{id:id}, function(data){
+                    if(data.status == 200){
+                        $('#dataTable').DataTable().ajax.reload(null, false);
+                        Swal.fire({
+                            title: "Sukses",
+                            text: data.msg,
+                            icon: 'success',
+                            showConfirmButton : false,
+                            timer: 2000
                         });
                     }else{
-                        $(form)[0].reset();
-                        $('#golonganTable').DataTable().ajax.reload(null, false);
                         Swal.fire({
-                            position: 'top-end',
-                            icon: 'success',
+                            title: "Gagal",
                             text: data.msg,
-                            showConfirmButton: false,
+                            icon: 'error',
+                            showConfirmButton : false,
                             timer: 2000
                         });
                     }
-                }
-            });
+                }, 'json')
+            }
         });
-
-        // tampilkan golongan
-        $('#golonganTable').DataTable({
-            processing : true,
-            info : true,
-            ajax : "{{ route('golongan.list') }}",
-            columns : [
-                // {data : 'id', name:'id'},
-                {data : 'DT_RowIndex', name:'DT_RowIndex'},
-                {data : 'nama', name: 'nama'},
-                {data : 'aksi', name : 'aksi'}
-            ]
-        });
-
-        // edit golongan
-        $('#golonganTable').on('click', '#btnEdit', function(){
-            var golonganId = $(this).data('id');
-            $('#editModal').find('form')[0].reset();
-            $('#editModal').find('span.error-text').text('');
-            $.get(`{{url('dashboard/golongan/${golonganId}/edit')}}`, {}, function(data){
-                $('#editModal').find('#nama').val(data.details.nama)
-            }, 'json');
-        });
-
-        // proses update
-        $('#update-golongan-form').on('submit', function(e){
-            e.preventDefault();
-            var form = this;
-            console.log(form)
-            $.ajax({
-                url : $(form).attr('action'),
-                method : $(form).attr('method'),
-                data : new FormData(form),
-                processData : false,
-                typeData : 'json',
-                contentType : false,
-                beforeSend : function () {
-                    $(form).find('span.error-text').text('');
-                },
-                success : function(data) {
-                    if(data.code == 0){
-                        $.each(data.error, function(prefix, val){
-                            $(form).find('span.'+prefix+'_error').text(val[0]);
-                            console.log(prefix);
-                        });
-                    }
-                }
-            })
-        });
-
     });
-    // $('#tambah').on('click', function(e){
-    //     e.preventDefault()
-    //     $('#exampleModal .close').click();
-    //     $.get("", {}, function(data, status){
-    //         $('#ModalLabel').html('Tambah Data')
-    //         $('#exampleModal .modal-body').html(data)
-    //         $('#exampleModal').modal('show')
-    //         tambah()
-    //     });
-    // });
+
 </script>
 @endpush
