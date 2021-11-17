@@ -6,6 +6,8 @@ use App\Models\Absen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Str;
+use PDF;
 
 class AbsenController extends Controller
 {
@@ -96,6 +98,14 @@ class AbsenController extends Controller
             Alert::error('Sukses', $th->getMessage());
             return redirect()->back();
         }
+    }
+
+    public function exportpdf(){
+        $pegawais = Absen::orderBy('tanggal', 'desc')->get();
+        view()->share('pegawais', $pegawais);
+        $pdf = PDF::loadView('absen.datapegawai-pdf');
+        $str = Str::random(10);
+        return $pdf->download($str.'.pdf');
     }
 
     public function status()

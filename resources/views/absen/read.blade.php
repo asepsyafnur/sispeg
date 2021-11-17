@@ -8,11 +8,11 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between">
         <h1 class="h3 mb-2 text-gray-800">Pegawai</h1>
-        <a href="{{ route('users.create') }}" class="btn btn-sm btn-primary">
+        <a href="{{ route('absens.exportpdf') }}" class="btn btn-sm btn-primary">
             <span class="icon text-white-50">
-                <i class="fas fa-plus"></i>
+                <i class="fas fa-file-pdf"></i>
             </span>
-            <span class="text">Tambah Data</span>
+            <span class="text">Export Laporan</span>
         </a>
     </div>
     <!-- DataTales Example -->
@@ -44,8 +44,8 @@
                                 <td>{{ $pegawai->kepulangan }}</td>
                                 <td>{{ $pegawai->keterangan }}</td>
                                 <td>
-                                    <a href="" class="badge badge-info p-2" id="show" data-toggle="modal" data-target="#exampleModal" 
-                                    data-id="{{$pegawai->id}}" 
+                                    <a href="" class="badge badge-secondary p-2" id="show" data-toggle="modal" data-target="#exampleModal" 
+                                    data-id="{{$pegawai->id}}"
                                     data-status="{{ $pegawai->status }}">
                                             {{$pegawai->status}}
                                     </a>

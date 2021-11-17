@@ -12,7 +12,7 @@
     <hr class="sidebar-divider my-0">
 
     <!-- Nav Item - Dashboard -->
-    <li class="nav-item active">
+    <li class="nav-item {{ set_active(['dashboard.index']) }}">
         <a class="nav-link" href="{{ route('dashboard.index') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span></a>
@@ -28,7 +28,7 @@
     <div class="sidebar-heading">
         Data Master
     </div>
-    <li class="nav-item">
+    <li class="nav-item {{ set_active(['jabatan.index']) }}">
         <a class="nav-link" href="{{ route('jabatan.index') }}">
             <i class="fas fa-handshake"></i>
             <span>Data Jabatan</span>
@@ -36,7 +36,7 @@
     </li>
     @endif
     @if(Auth::user()->level == "admin")
-    <li class="nav-item">
+    <li class="nav-item {{ set_active(['golongan.index']) }}">
         <a class="nav-link" href="{{ route('golongan.index') }}">
             <i class="fas fa-medal"></i>
             <span>Data Golongan</span>
@@ -44,7 +44,7 @@
     </li>
     @endif
     @if(Auth::user()->level == "admin")
-    <li class="nav-item">
+    <li class="nav-item {{ set_active(['users.index', 'users.create']) }}">
         <a class="nav-link" href="{{ route('users.index') }}">
             <i class="fas fa-users"></i>
             <span>Data Pegawai</span>
@@ -53,7 +53,7 @@
     @endif
 
     @if(Auth::user()->level == "admin")
-    <li class="nav-item">
+    <li class="nav-item {{ set_active(['absens.read']) }}">
         <a class="nav-link" href="{{ route('absens.read') }}">
             <i class="fas fa-clipboard-list"></i>
             <span>Laporan Absen</span>
@@ -66,7 +66,7 @@
     <div class="sidebar-heading">
         Data Absen
     </div>
-    <li class="nav-item">
+    <li class="nav-item {{ set_active(['absens.index']) }}">
         <a class="nav-link" href="{{ route('absens.index') }}">
             <i class="fas fa-clipboard-list"></i>
             <span>Absen</span>
@@ -74,7 +74,7 @@
     </li>
     @endif
 
-    <li class="nav-item">
+    <li class="nav-item {{ set_active(['pengaturan.index']) }}">
         <a class="nav-link" href="{{ route('pengaturan.index') }}">
             <i class="fas fa-cog"></i>
             <span>Pengaturan Akun</span>

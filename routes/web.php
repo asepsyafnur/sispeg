@@ -43,6 +43,7 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth']], function() {
     // absen
     Route::get('/absens/read', [\App\Http\Controllers\AbsenController::class, 'read'])->name('absens.read');
     Route::post('/absens/update',[\App\Http\Controllers\AbsenController::class, 'update'])->name('absens.update');
+    Route::get('/absens/exportpdf',[\App\Http\Controllers\AbsenController::class, 'exportpdf'])->name('absens.exportpdf');
     Route::resource('/absens', \App\Http\Controllers\AbsenController::class)->except('update');
     Route::resource('/pengaturan', \App\Http\Controllers\PengaturanController::class)->except('create', 'edit', 'show', 'destroy');
 });
