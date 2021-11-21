@@ -79,7 +79,7 @@ class AbsenController extends Controller
 
     public function read()
     {
-        $pegawais = Absen::all();
+        $pegawais =  Absen::all();
         $statuses = $this->status();
         return view('absen.read', compact('pegawais', 'statuses'));
     }

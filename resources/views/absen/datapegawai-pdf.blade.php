@@ -29,7 +29,7 @@
 </head>
 <body>
 
-<h1>A Fancy Table</h1>
+<h3>Laporan Absen Pegawai</h3>
 
 <table id="customers">
     <thead>
